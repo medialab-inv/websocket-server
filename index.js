@@ -9,7 +9,7 @@ const wss = new WebSocket.Server({
     clientTracking: true
 });
 
-server.listen(PORT, () => {
+server.listen(10000, () => {
     console.log(`Servidor WebSocket`);
 });
 wss.on('connection', (ws) => {
