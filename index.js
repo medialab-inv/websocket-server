@@ -10,7 +10,7 @@ const wss = new WebSocket.Server({
 });
 
 server.listen(PORT, () => {
-    console.log(`Servidor WebSocket en puerto ${PORT}`);
+    console.log(`Servidor WebSocket`);
 });
 wss.on('connection', (ws) => {
     console.log('Nuevo cliente conectado');
