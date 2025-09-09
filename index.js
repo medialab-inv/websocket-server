@@ -1,9 +1,15 @@
 const WebSocket = require('ws');
-const http = require('http');
-
 const server = http.createServer();
-const wss = new WebSocket.Server({ server });
 
+const http = require('http');
+const wss = new WebSocket.Server({ 
+    port: process.env.PORT || 10000,
+    clientTracking: true
+});
+
+server.listen(PORT, () => {
+    console.log(`Servidor WebSocket en puerto ${PORT}`);
+});
 wss.on('connection', (ws) => {
     console.log('Nuevo cliente conectado');
     
@@ -12,9 +18,11 @@ wss.on('connection', (ws) => {
         // Aquí puedes procesar los mensajes
         ws.send('Mensaje recibido: ' + message);
     });
+    
+    ws.on('close', () => {
+        console.log('Cliente desconectado');
+    });
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Servidor WebSocket en puerto ${PORT}`);
-});
+
+console.log(`Servidor WebSocket iniciado en puerto ${process.env.PORT || 10000}`);
