@@ -15,6 +15,7 @@ server.listen(10000, () => {
 wss.on('connection', (ws) => {
     console.log('Nuevo cliente conectado');
     ws.send('Hola');
+    console.log('Mensaje');
     
     ws.on('message', (message) => {
         console.log('Mensaje recibido:', message.toString());
