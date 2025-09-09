@@ -19,6 +19,7 @@ wss.on('connection', (ws) => {
         type: 'connection',
         status: 'connected',
         message: 'Bienvenido al servidor WebSocket',
+        cliente: ws._socket.remoteAddress,
     };
     ws.send(JSON.stringify(welcomeMessage));
     
