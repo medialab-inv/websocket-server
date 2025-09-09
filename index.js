@@ -1,7 +1,9 @@
 const WebSocket = require('ws');
-const server = http.createServer();
 
 const http = require('http');
+const server = http.createServer();
+
+
 const wss = new WebSocket.Server({ 
     port: process.env.PORT || 10000,
     clientTracking: true
