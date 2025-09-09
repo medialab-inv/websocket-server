@@ -15,11 +15,13 @@ server.listen(10000, () => {
 wss.on('connection', (ws) => {
     console.log('Nuevo cliente conectado');
     
-    // Enviar un mensaje de bienvenida en formato JSON
+    const clientIP = ws._socket.remoteAddress;
+    
     const welcomeMessage = {
         type: 'connection',
         status: 'connected',
         message: 'Bienvenido al servidor WebSocket',
+        clientIP: clientIP,
         timestamp: new Date().toISOString()
     };
     ws.send(JSON.stringify(welcomeMessage));
@@ -28,26 +30,19 @@ wss.on('connection', (ws) => {
         console.log('Mensaje recibido:', message.toString());
         
         try {
-            // Intentar parsear el mensaje como JSON
             const data = JSON.parse(message);
             console.log('Datos JSON recibidos:', data);
             
-            // Responder con un JSON
             const response = {
                 status: 'success',
                 received: data,
                 timestamp: new Date().toISOString()
             };
             ws.send(JSON.stringify(response));
+            console.log('Mensaje enviado:', response);
             
         } catch (e) {
-            const errorResponse = {
-                status: 'error',
-                message: 'Mensaje no es un JSON válido',
-                originalMessage: message.toString(),
-                timestamp: new Date().toISOString()
-            };
-            ws.send(JSON.stringify(errorResponse));
+            console.error('Error al procesar el mensaje:', e);
         }
     });
     
