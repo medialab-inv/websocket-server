@@ -33,16 +33,33 @@ wss.on('connection', (ws) => {
             const data = JSON.parse(message);
             console.log('Datos JSON recibidos:', data);
             
+            // Envía el mensaje a todos los clientes conectados excepto al remitente
+            wss.clients.forEach((client) => {
+                if (client !== ws && client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify({
+                        type: 'message',
+                        from: 'server',
+                        content: data,
+                        timestamp: new Date().toISOString()
+                    }));
+                }
+            });
+            
+            // Confirmación al remitente
             const response = {
                 status: 'success',
-                received: data,
+                message: 'Mensaje reenviado a los demás clientes',
                 timestamp: new Date().toISOString()
             };
             ws.send(JSON.stringify(response));
-            console.log('Mensaje enviado:', response);
             
         } catch (e) {
             console.error('Error al procesar el mensaje:', e);
+            ws.send(JSON.stringify({
+                status: 'error',
+                message: 'Error al procesar el mensaje',
+                error: e.message
+            }));
         }
     });
     
