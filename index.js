@@ -14,12 +14,15 @@ server.listen(10000, () => {
 });
 wss.on('connection', (ws) => {
     console.log('Nuevo cliente conectado');
+    const serverAddress = server.address();
+    const serverIP = serverAddress.address === '::' ? '127.0.0.1' : serverAddress.address;
     
     const welcomeMessage = {
         type: 'connection',
         status: 'connected',
         message: 'Bienvenido al servidor WebSocket',
-        cliente: ws._socket.remoteAddress,
+        serverIP: serverIP,
+        serverPort: serverAddress.port,
     };
     ws.send(JSON.stringify(welcomeMessage));
     
