@@ -15,14 +15,10 @@ server.listen(10000, () => {
 wss.on('connection', (ws) => {
     console.log('Nuevo cliente conectado');
     
-    const clientIP = ws._socket.remoteAddress;
-    
     const welcomeMessage = {
         type: 'connection',
         status: 'connected',
         message: 'Bienvenido al servidor WebSocket',
-        clientIP: clientIP,
-        timestamp: new Date().toISOString()
     };
     ws.send(JSON.stringify(welcomeMessage));
     
