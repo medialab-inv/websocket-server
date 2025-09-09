@@ -40,7 +40,6 @@ wss.on('connection', (ws) => {
                         type: 'message',
                         from: 'server',
                         content: data,
-                        timestamp: new Date().toISOString()
                     }));
                 }
             });
@@ -49,7 +48,6 @@ wss.on('connection', (ws) => {
             const response = {
                 status: 'success',
                 message: 'Mensaje reenviado a los demás clientes',
-                timestamp: new Date().toISOString()
             };
             ws.send(JSON.stringify(response));
             
