@@ -36,11 +36,7 @@ wss.on('connection', (ws) => {
             // Envía el mensaje a todos los clientes conectados excepto al remitente
             wss.clients.forEach((client) => {
                 if (client !== ws && client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({
-                        type: 'message',
-                        from: 'server',
-                        content: data,
-                    }));
+                    client.send(JSON.stringify(data));
                 }
             });
             
