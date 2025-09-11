@@ -39,40 +39,11 @@ wss.on('connection', (ws) => {
             console.log('Datos JSON recibidos:', data);
             
             // Manejar solicitud del último mensaje
-            if (data.type === 'getLastMessage') {
-                const response = {
-                    type: 'lastMessage',
-                    exists: lastMessage !== null,
-                    message: lastMessage
-                };
-                return ws.send(JSON.stringify(response));
+            if (data.action === 'load' && data.fileName) {
+               
+                return ws.send(JSON.stringify(lastMessage));
             }
             
-            // Manejar solicitud de carga de archivo JSON
-            if (data.action === 'load' && data.fileName) {
-                try {
-                    const filePath = path.join(__dirname, data.fileName);
-                    const fileContent = await fs.readFile(filePath, 'utf8');
-                    const jsonData = JSON.parse(fileContent);
-                    
-                    const response = {
-                        type: 'fileContent',
-                        fileName: data.fileName,
-                        content: jsonData,
-                        status: 'success'
-                    };
-                    return ws.send(JSON.stringify(response));
-                } catch (error) {
-                    console.error('Error al cargar el archivo:', error);
-                    return ws.send(JSON.stringify({
-                        type: 'error',
-                        fileName: data.fileName,
-                        message: 'Error al cargar el archivo',
-                        error: error.message,
-                        status: 'error'
-                    }));
-                }
-            }
             
             // Verificar si el mensaje es un JSON válido
             if (typeof data === 'object' && data !== null) {
