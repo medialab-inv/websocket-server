@@ -9,6 +9,9 @@ const wss = new WebSocket.Server({
     clientTracking: true
 });
 
+// Almacenamiento del último mensaje
+let lastMessage = null;
+
 server.listen(10000, () => {
     console.log(`Servidor WebSocket`);
 });
@@ -33,19 +36,38 @@ wss.on('connection', (ws) => {
             const data = JSON.parse(message);
             console.log('Datos JSON recibidos:', data);
             
-            // Envía el mensaje a todos los clientes conectados excepto al remitente
-            wss.clients.forEach((client) => {
-                if (client !== ws && client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify(data));
-                }
+            // Manejar solicitud del último mensaje
+            if (data.type === 'getLastMessage') {
+                const response = {
+                    type: 'lastMessage',
+                    exists: lastMessage !== null,
+                    message: lastMessage
+                };
+                return ws.send(JSON.stringify(response));
+            }
+            
+            // Verificar si el mensaje es un JSON válido
+            if (typeof data === 'object' && data !== null) {
+                // Guardar el último mensaje con timestamp
+                lastMessage = {
+                    ...data,
+                    timestamp: new Date().toISOString()
+                };
+                console.log('Mensaje guardado:', lastMessage);
+            }
+            
+            // Envía el mensaje a todos los clientes conectados incluyendo al remitente
+            const broadcastMessage = JSON.stringify({
+                ...data,
+                type: data.type || 'message',
+                timestamp: new Date().toISOString()
             });
             
-            // Confirmación al remitente
-            const response = {
-                status: 'success',
-                message: 'Mensaje reenviado a los demás clientes',
-            };
-            ws.send(JSON.stringify(response));
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(broadcastMessage);
+                }
+            });
             
         } catch (e) {
             console.error('Error al procesar el mensaje:', e);
