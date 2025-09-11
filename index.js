@@ -1,6 +1,8 @@
 const WebSocket = require('ws');
 
 const http = require('http');
+const fs = require('fs').promises;
+const path = require('path');
 const server = http.createServer();
 
 
@@ -29,7 +31,7 @@ wss.on('connection', (ws) => {
     };
     ws.send(JSON.stringify(welcomeMessage));
     
-    ws.on('message', (message) => {
+    ws.on('message', async (message) => {
         console.log('Mensaje recibido:', message.toString());
         
         try {
@@ -44,6 +46,32 @@ wss.on('connection', (ws) => {
                     message: lastMessage
                 };
                 return ws.send(JSON.stringify(response));
+            }
+            
+            // Manejar solicitud de carga de archivo JSON
+            if (data.action === 'load' && data.fileName) {
+                try {
+                    const filePath = path.join(__dirname, data.fileName);
+                    const fileContent = await fs.readFile(filePath, 'utf8');
+                    const jsonData = JSON.parse(fileContent);
+                    
+                    const response = {
+                        type: 'fileContent',
+                        fileName: data.fileName,
+                        content: jsonData,
+                        status: 'success'
+                    };
+                    return ws.send(JSON.stringify(response));
+                } catch (error) {
+                    console.error('Error al cargar el archivo:', error);
+                    return ws.send(JSON.stringify({
+                        type: 'error',
+                        fileName: data.fileName,
+                        message: 'Error al cargar el archivo',
+                        error: error.message,
+                        status: 'error'
+                    }));
+                }
             }
             
             // Verificar si el mensaje es un JSON válido
