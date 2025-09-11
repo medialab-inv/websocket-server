@@ -40,7 +40,7 @@ wss.on('connection', (ws) => {
             
             // Manejar solicitud del último mensaje
             if (data.action === 'load' && data.fileName) {
-               
+                 console.log('Enviado:', message.toString());
                 return ws.send(JSON.stringify(lastMessage));
             }
             
