@@ -53,9 +53,7 @@ wss.on('connection', (ws) => {
                     timestamp: new Date().toISOString()
                 };
                 console.log('Mensaje guardado:', lastMessage);
-            }
-            
-            // Envía el mensaje a todos los clientes conectados incluyendo al remitente
+            } // Envía el mensaje a todos los clientes conectados incluyendo al remitente
             const broadcastMessage = JSON.stringify({
                 ...data,
                 type: data.type || 'message',
@@ -67,15 +65,24 @@ wss.on('connection', (ws) => {
                     client.send(broadcastMessage);
                 }
             });
-            
-        } catch (e) {
+            } catch (e) {
             console.error('Error al procesar el mensaje:', e);
-            ws.send(JSON.stringify({
-                status: 'error',
-                message: 'Error al procesar el mensaje',
-                error: e.message
-            }));
+             // Envía el mensaje a todos los clientes conectados incluyendo al remitente
+            const broadcastMessage = JSON.stringify({
+                ...message,
+                type:  'message',
+                timestamp: new Date().toISOString()
+            });
+            
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(broadcastMessage);
+                }
+            });
         }
+           
+            
+        
     });
     
     ws.on('close', () => {
