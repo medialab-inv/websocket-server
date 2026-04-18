@@ -27,8 +27,7 @@ app.get('/audio/:fileId', async (req, res) => {
     console.log('Token OK:', token.token ? 'tiene token' : 'token null');
     
     const { fileId } = req.params;
-    const client = await auth.getClient();
-    const token = await client.getAccessToken();
+   
 
     const driveUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
     const response = await fetch(driveUrl, {
