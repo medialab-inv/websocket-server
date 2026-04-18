@@ -1,4 +1,13 @@
-const WebSocket = require('ws');
+app.get('/audio/:fileId', async (req, res) => {
+  try {
+    const fetch = require('node-fetch');
+    console.log('Request de audio para:', req.params.fileId);
+    const client = await auth.getClient();
+    console.log('Auth OK');
+    const token = await client.getAccessToken();
+    console.log('Token OK:', token.token ? 'tiene token' : 'token null');
+
+    const WebSocket = require('ws');
 const express = require('express');
 const { google } = require('googleapis');
 
@@ -128,3 +137,5 @@ server.listen(PORT, () => {
   console.log(`Servidor HTTP + WebSocket iniciado en puerto ${PORT}`);
 });
 console.log(`Servidor WebSocket iniciado en puerto ${process.env.PORT || 10000}`);
+  }
+}
