@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const express = require('express');
 const { google } = require('googleapis');
-
+const fetch = require('node-fetch');
 const app = express();
 
 // ── CORS para que Unity WebGL pueda hacer fetch ──
@@ -19,7 +19,7 @@ const auth = new google.auth.GoogleAuth({
 // ── Endpoint de audio ──
 app.get('/audio/:fileId', async (req, res) => {
   try {
-    const fetch = require('node-fetch');
+    
     console.log('Request de audio para:', req.params.fileId);
     const client = await auth.getClient();
     console.log('Auth OK');
