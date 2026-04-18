@@ -24,7 +24,7 @@ const auth = new google.auth.GoogleAuth({
 });
 
 // ── Endpoint HEAD (Unity verifica antes de descargar) ──
-app.head('/audio/:fileId', async (req, res) => {
+app.head('/drive/:fileId', async (req, res) => {
   try {
     const { fileId } = req.params;
     const client = await auth.getClient();
@@ -36,7 +36,7 @@ app.head('/audio/:fileId', async (req, res) => {
       headers: { Authorization: `Bearer ${token.token}` }
     });
 
-    res.setHeader('Content-Type', response.headers.get('content-type') || 'audio/mpeg');
+    res.setHeader('Content-Type', response.headers.get('content-type') || 'application/octet-stream');
     res.setHeader('Accept-Ranges', 'bytes');
     res.status(response.ok ? 200 : response.status).end();
 
@@ -47,7 +47,7 @@ app.head('/audio/:fileId', async (req, res) => {
 });
 
 // ── Endpoint GET audio ──
-app.get('/audio/:fileId', async (req, res) => {
+app.get('/drive/:fileId', async (req, res) => {
   try {
     const { fileId } = req.params;
     console.log('Request de audio para:', fileId);
@@ -67,7 +67,7 @@ app.get('/audio/:fileId', async (req, res) => {
       return res.status(response.status).send('Error al obtener audio de Drive');
     }
 
-    res.setHeader('Content-Type', response.headers.get('content-type') || 'audio/mpeg');
+    res.setHeader('Content-Type', response.headers.get('content-type') || 'application/octet-stream');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     const { Readable } = require('stream');
     Readable.fromWeb(response.body).pipe(res);
