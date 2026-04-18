@@ -3,7 +3,10 @@ const express = require('express');
 const { google } = require('googleapis');
 
 const app = express();
-
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
 // ── CORS para que Unity WebGL pueda hacer fetch ──
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -134,4 +137,7 @@ server.listen(PORT, () => {
   console.log(`Servidor HTTP + WebSocket iniciado en puerto ${PORT}`);
 });
 console.log(`Servidor WebSocket iniciado en puerto ${process.env.PORT || 10000}`);
- 
+ console.log('Rutas registradas:');
+app._router.stack
+  .filter(r => r.route)
+  .forEach(r => console.log(Object.keys(r.route.methods)[0].toUpperCase(), r.route.path));
