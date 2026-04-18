@@ -18,7 +18,27 @@ const auth = new google.auth.GoogleAuth({
   credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON),
   scopes: ['https://www.googleapis.com/auth/drive.readonly'],
 });
+app.head('/audio/:fileId', async (req, res) => {
+  try {
+    const { fileId } = req.params;
+    const client = await auth.getClient();
+    const token = await client.getAccessToken();
 
+    const driveUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
+    const response = await fetch(driveUrl, {
+      method: 'HEAD',
+      headers: { Authorization: `Bearer ${token.token}` }
+    });
+
+    res.setHeader('Content-Type', response.headers.get('content-type') || 'audio/mpeg');
+    res.setHeader('Accept-Ranges', 'bytes');
+    res.status(response.ok ? 200 : response.status).end();
+
+  } catch (e) {
+    console.error('Error en HEAD /audio:', e);
+    res.status(500).end();
+  }
+});
 // ── Endpoint de audio ──
 app.get('/audio/:fileId', async (req, res) => {
   try {
