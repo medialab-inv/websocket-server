@@ -1,15 +1,53 @@
 const WebSocket = require('ws');
+const express = require('express');
+const { google } = require('googleapis');
 
+const app = express();
+
+// ── CORS para que Unity WebGL pueda hacer fetch ──
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+});
+
+// ── Auth con Service Account ──
+const auth = new google.auth.GoogleAuth({
+  credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON),
+  scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+});
+
+// ── Endpoint de audio ──
+app.get('/audio/:fileId', async (req, res) => {
+  try {
+    const { fileId } = req.params;
+    const client = await auth.getClient();
+    const token = await client.getAccessToken();
+
+    const driveUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
+    const response = await fetch(driveUrl, {
+      headers: { Authorization: `Bearer ${token.token}` }
+    });
+
+    if (!response.ok) {
+      return res.status(response.status).send('Error al obtener audio de Drive');
+    }
+
+    res.setHeader('Content-Type', response.headers.get('content-type') || 'audio/mpeg');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    response.body.pipe(res);
+
+  } catch (e) {
+    console.error('Error en /audio:', e);
+    res.status(500).send('Error interno');
+  }
+});
 const http = require('http');
 const fs = require('fs').promises;
 const path = require('path');
-const server = http.createServer();
+const server = http.createServer(app);
 
 
-const wss = new WebSocket.Server({ 
-    port: process.env.PORT || 10000,
-    clientTracking: true
-});
+const wss = new WebSocket.Server({server});
 
 // Almacenamiento del último mensaje
 let lastMessage = null;
