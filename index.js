@@ -137,5 +137,8 @@ server.listen(PORT, () => {
   console.log(`Servidor HTTP + WebSocket iniciado en puerto ${PORT}`);
 });
 console.log(`Servidor WebSocket iniciado en puerto ${process.env.PORT || 10000}`);
+  }catch (e) {
+    console.error('Error en /audio:', e);
+    res.status(500).send('Error interno');
   }
-}
+})
