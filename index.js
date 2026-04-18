@@ -69,7 +69,8 @@ app.get('/audio/:fileId', async (req, res) => {
 
     res.setHeader('Content-Type', response.headers.get('content-type') || 'audio/mpeg');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    response.body.pipe(res);
+    const { Readable } = require('stream');
+    Readable.fromWeb(response.body).pipe(res);
 
   } catch (e) {
     console.error('Error en /audio:', e);
