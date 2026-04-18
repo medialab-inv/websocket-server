@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const express = require('express');
 const { google } = require('googleapis');
-const fetch = require('node-fetch');
+
 const app = express();
 
 // ── CORS para que Unity WebGL pueda hacer fetch ──
