@@ -47,11 +47,15 @@ const path = require('path');
 const server = http.createServer(app);
 
 
-const wss = new WebSocket.Server({server});
+const wss = new WebSocket.Server({ noServer: true });
 
 // Almacenamiento del último mensaje
 let lastMessage = null;
-
+server.on('upgrade', (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, request);
+  });
+});
 server.listen(10000, () => {
     console.log(`Servidor WebSocket`);
 });
