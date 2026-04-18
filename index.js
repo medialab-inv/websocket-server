@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 
 // ── Auth con Service Account ──
 const auth = new google.auth.GoogleAuth({
-  credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON),
+  credentials: JSON.parse(Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT_JSON, 'base64').toString('utf8')),
   scopes: ['https://www.googleapis.com/auth/drive.readonly'],
 });
 
