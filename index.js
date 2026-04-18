@@ -56,9 +56,7 @@ server.on('upgrade', (request, socket, head) => {
     wss.emit('connection', ws, request);
   });
 });
-server.listen(10000, () => {
-    console.log(`Servidor WebSocket`);
-});
+
 wss.on('connection', (ws) => {
     console.log('Nuevo cliente conectado');
     const serverAddress = server.address();
