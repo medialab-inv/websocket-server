@@ -121,5 +121,8 @@ wss.on('connection', (ws) => {
     });
 });
 
-
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, () => {
+  console.log(`Servidor HTTP + WebSocket iniciado en puerto ${PORT}`);
+});
 console.log(`Servidor WebSocket iniciado en puerto ${process.env.PORT || 10000}`);
